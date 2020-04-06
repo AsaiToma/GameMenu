@@ -3,6 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum Mode
+{
+    coin,
+    exp
+}
+public enum Difficulty
+{
+    easy,
+    normal,
+    hard
+}
+
 public class UIControllerScript : MonoBehaviour
 {
     //ボタン系
@@ -10,9 +22,17 @@ public class UIControllerScript : MonoBehaviour
     public GameObject CoinSelect_Panel;
     public GameObject ExpSelect_Panel;
 
+
+    //コインか経験値か
+    
+    private Mode mode;
+
+    //難易度
+    
+    private Difficulty difficulty;
     string CorE;
 
-    //すtまいな系
+    //スタミナ系
     public Slider staminaGauge;
     private int stamina_max = 10;
     private int stamina_now = 10;
@@ -47,6 +67,10 @@ public class UIControllerScript : MonoBehaviour
     public Text uc_level_text;
     private int uc_level_now = 1;
 
+    
+
+    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,6 +82,7 @@ public class UIControllerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //スタミナ回復
         if (stamina_now  < stamina_max)
         {
             staminaRecoveryTime += Time.deltaTime;
@@ -82,10 +107,15 @@ public class UIControllerScript : MonoBehaviour
     //タブを閉じる
     public void push_CloseButton()
     {
-        DangeonSelect_Panel.SetActive(false);
-        CoinSelect_Panel.SetActive(false);
-        ExpSelect_Panel.SetActive(false);
-        powerup_Panel.SetActive(false);
+        StartCoroutine(setfalse(DangeonSelect_Panel, 0.0f));
+        StartCoroutine(setfalse(CoinSelect_Panel, 0.0f));
+        StartCoroutine(setfalse(ExpSelect_Panel, 0.0f));
+        StartCoroutine(setfalse(powerup_Panel, 0.0f));
+
+        //DangeonSelect_Panel.SetActive(false);
+        //CoinSelect_Panel.SetActive(false);
+        //ExpSelect_Panel.SetActive(false);
+        //powerup_Panel.SetActive(false);
     }
 
 
@@ -98,7 +128,7 @@ public class UIControllerScript : MonoBehaviour
     //コインか経験値を選択
     public void push_CoinOrExpButton(string which)
     {
-        DangeonSelect_Panel.SetActive(false);
+        StartCoroutine(setfalse(DangeonSelect_Panel, 0.0f));
         CorE = which;
         if (CorE == "coin")
         {
@@ -202,7 +232,8 @@ public class UIControllerScript : MonoBehaviour
     {
         if(stamina_now - num < 0)
         {
-            StartCoroutine("setfalse", nostamina_message);
+            StartCoroutine(settrue(nostamina_message, 0.0f));
+            StartCoroutine(setfalse(nostamina_message,3.0f));
             ucs.uc_sad();
             return false;
         }
@@ -301,8 +332,8 @@ public class UIControllerScript : MonoBehaviour
 
         if (coin_number < 1500)
         {
-            
-            StartCoroutine("setfalse", nocoin_message);
+            StartCoroutine(settrue(nocoin_message, 0.0f));
+            StartCoroutine(setfalse(nocoin_message,3.0f));
             ucs.uc_sad();
         }
         else
@@ -317,13 +348,20 @@ public class UIControllerScript : MonoBehaviour
         }
     }
 
-    
-
-    IEnumerator setfalse(GameObject go)
+    IEnumerator settrue(GameObject go, float waitTime)
     {
+        yield return new WaitForSeconds(waitTime);
         go.SetActive(true);
-        yield return new WaitForSeconds(3.0f);
+        Debug.Log("settrue");
+    }
+
+    IEnumerator setfalse(GameObject go,float waitTime)
+    {
+        //go.SetActive(true);
+        yield return new WaitForSeconds(waitTime);
         go.SetActive(false);
         Debug.Log("setfalse");
     }
 }
+
+
